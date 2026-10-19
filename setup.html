@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Setup · Michele Baldassarre</title>
+<style>
+  :root { --bg:#03060a; --neon:#39ff9a; --cyan:#2de2ff; --text:#dff7ea; --mute:#7fa092; --line:rgba(57,255,154,.22); }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    display: flex; flex-direction: column; padding: 1.3rem 2.2rem; overflow: hidden; position: relative;
+    background: radial-gradient(ellipse at 70% 0%, #06201a 0%, var(--bg) 60%); color: var(--text);
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+  }
+  body::before {
+    content: ""; position: fixed; inset: 0; pointer-events: none; opacity: .35;
+    background-image: linear-gradient(90deg, transparent 49.5%, var(--line) 50%, transparent 50.5%),
+                      linear-gradient(0deg, transparent 49.5%, var(--line) 50%, transparent 50.5%);
+    background-size: 90px 90px; animation: circuit 18s linear infinite;
+  }
+  body::after { content: ""; position: fixed; inset: 0; pointer-events: none;
+    background: repeating-linear-gradient(0deg, rgba(255,255,255,.025) 0 1px, transparent 1px 3px); }
+  @keyframes circuit { to { background-position: 90px 90px; } }
+
+  .top { position: relative; z-index: 1; display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem;
+         border-bottom: 1px solid var(--line); padding-bottom: .9rem; }
+  .back { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .7rem; letter-spacing: .15em; text-transform: uppercase; color: var(--cyan); text-decoration: none; }
+  .back:hover { text-shadow: 0 0 10px var(--cyan); }
+  .title { text-align: right; }
+  .kicker { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .68rem; letter-spacing: .3em; text-transform: uppercase; color: var(--cyan); }
+  h1 { font-size: clamp(1.6rem, 2.8vw, 2.4rem); font-weight: 800; letter-spacing: .02em; line-height: 1.05; margin-top: .2rem; color: #fff;
+       animation: glow 3.5s ease-in-out infinite; }
+  h1 span { color: var(--neon); }
+  @keyframes glow { 0%,100% { text-shadow: 0 0 14px rgba(57,255,154,.35); } 50% { text-shadow: 0 0 26px rgba(57,255,154,.7); } }
+
+  .main { position: relative; z-index: 1; flex: 1; min-height: 0; display: grid; grid-template-columns: 1.35fr 1fr; gap: 1.6rem; padding-top: 1.1rem; }
+  .col { display: flex; flex-direction: column; min-height: 0; }
+  h2 { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .72rem; font-weight: 700; letter-spacing: .3em; text-transform: uppercase;
+       color: var(--neon); margin-bottom: .8rem; display: flex; align-items: center; gap: .6rem; }
+  h2::after { content: ""; flex: 1; height: 1px; background: linear-gradient(90deg, var(--neon), transparent); }
+
+  /* Specifiche: riempiono tutta l'altezza disponibile */
+  .specs { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(4, 1fr); gap: .8rem; }
+  .spec { position: relative; display: flex; flex-direction: column; justify-content: space-between; padding: .9rem 1rem;
+          background: rgba(6,18,14,.7); border: 1px solid var(--line); animation: rise .7s ease both;
+          transition: border-color .35s, box-shadow .35s, transform .35s; }
+  .spec:nth-child(1){animation-delay:.05s}.spec:nth-child(2){animation-delay:.12s}.spec:nth-child(3){animation-delay:.19s}.spec:nth-child(4){animation-delay:.26s}
+  .spec:nth-child(5){animation-delay:.33s}.spec:nth-child(6){animation-delay:.4s}.spec:nth-child(7){animation-delay:.47s}.spec:nth-child(8){animation-delay:.54s}
+  .spec::before, .spec::after { content: ""; position: absolute; width: 10px; height: 10px; border: 2px solid var(--neon); transition: all .35s; }
+  .spec::before { top: -1px; left: -1px; border-right: none; border-bottom: none; }
+  .spec::after { bottom: -1px; right: -1px; border-left: none; border-top: none; }
+  .spec:hover { border-color: rgba(57,255,154,.6); box-shadow: 0 0 22px rgba(57,255,154,.18); transform: translateY(-2px); }
+  .spec:hover::before, .spec:hover::after { width: 18px; height: 18px; }
+
+  .head { display: flex; align-items: center; justify-content: space-between; gap: .6rem; }
+  .label { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .62rem; letter-spacing: .2em; text-transform: uppercase; color: var(--cyan); }
+  /* Scheda sistema operativo: logo Linux in filigrana sul lato destro */
+  .spec.os { overflow: hidden; }
+  .spec.os > :not(.bg-logo) { position: relative; z-index: 1; }
+  .bg-logo { position: absolute; right: -36px; bottom: -40px; width: 230px; height: auto; color: var(--neon); opacity: .13;
+             z-index: 0; pointer-events: none; animation: floatLogo 7s ease-in-out infinite; }
+  @keyframes floatLogo { 0%,100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-8px) rotate(3deg); } }
+.ico svg { width: 2.3rem; height: 2.3rem; display: block; color: var(--neon); overflow: visible; }
+  .ico { font-size: 2.1rem; line-height: 1; display: inline-block; filter: drop-shadow(0 0 8px rgba(57,255,154,.35)); }
+  .value { font-size: 1.22rem; font-weight: 700; color: #fff; line-height: 1.25; }
+  .note { font-size: .84rem; color: var(--mute); line-height: 1.4; margin-top: .25rem; }
+  .bar { height: 5px; margin-top: .6rem; background: rgba(57,255,154,.12); overflow: hidden; }
+  .bar span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--cyan), var(--neon)); box-shadow: 0 0 10px var(--neon);
+              animation: fill 1.6s .6s ease forwards; }
+  @keyframes fill { to { width: var(--w); } }
+  @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+  /* Animazioni delle icone, una per componente */
+  .i-cpu { animation: cpuSpin 6s linear infinite; }
+  .i-gpu { animation: gpuBounce 1.8s ease-in-out infinite; }
+  .i-ram { animation: ramShake 2.4s ease-in-out infinite; }
+  .i-disk { animation: diskSpin 3s linear infinite; }
+  .i-linux { animation: penguin 2.6s ease-in-out infinite; transform-origin: 50% 90%; }
+  .i-light { animation: flicker 3s ease-in-out infinite; }
+  .i-screen { animation: screenGlow 3.2s ease-in-out infinite; }
+  .i-batt { animation: battPulse 2.2s ease-in-out infinite; }
+  @keyframes cpuSpin { to { transform: rotate(360deg); } }
+  @keyframes gpuBounce { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-5px) scale(1.08); } }
+  @keyframes ramShake { 0%,100% { transform: translateX(0); } 20% { transform: translateX(-2px); } 40% { transform: translateX(2px); } 60% { transform: translateX(-1px); } 80% { transform: translateX(1px); } }
+  @keyframes diskSpin { to { transform: rotate(-360deg); } }
+  @keyframes penguin { 0%,100% { transform: rotate(-6deg); } 50% { transform: rotate(6deg); } }
+  @keyframes flicker { 0%,100% { opacity: 1; } 45% { opacity: .55; } 50% { opacity: 1; } 70% { opacity: .75; } }
+  @keyframes screenGlow { 0%,100% { filter: drop-shadow(0 0 4px rgba(45,226,255,.4)); } 50% { filter: drop-shadow(0 0 14px rgba(45,226,255,.9)); } }
+  @keyframes battPulse { 0%,100% { opacity: 1; } 50% { opacity: .45; } }
+
+  /* Modifiche: riempiono l'altezza della colonna */
+  .mods { flex: 1; min-height: 0; list-style: none; display: grid; grid-template-rows: repeat(5, 1fr); gap: .8rem; }
+  .mods li { position: relative; display: flex; flex-direction: column; justify-content: center; padding: .8rem 1rem .8rem 1.9rem;
+             background: rgba(6,18,14,.6); border-left: 2px solid var(--neon); font-size: 1.02rem; line-height: 1.35; animation: slide .7s ease both; }
+  .mods li:nth-child(1){animation-delay:.2s}.mods li:nth-child(2){animation-delay:.32s}.mods li:nth-child(3){animation-delay:.44s}
+  .mods li:nth-child(4){animation-delay:.56s}.mods li:nth-child(5){animation-delay:.68s}
+  .mods li::before { content: "▸"; position: absolute; left: .75rem; top: .85rem; color: var(--neon); }
+  .mods span { display: block; font-size: .84rem; color: var(--mute); margin-top: .25rem; }
+  @keyframes slide { from { opacity: 0; transform: translateX(14px); } to { opacity: 1; transform: none; } }
+
+    .why { margin-top: .9rem; padding: .9rem 1rem; border: 1px solid var(--line); background: rgba(6,18,14,.7); }
+  .why h2 { margin-bottom: .5rem; }
+  .why p { font-size: .98rem; line-height: 1.5; color: var(--text); }
+  .why b { color: var(--neon); font-weight: 700; }
+.footer { position: relative; z-index: 1; padding-top: .7rem; text-align: center; font-family: ui-monospace, Menlo, Consolas, monospace;
+            font-size: .62rem; letter-spacing: .3em; text-transform: uppercase; color: var(--mute); }
+  .footer b { color: var(--neon); font-weight: 400; animation: blink 1.2s steps(2) infinite; }
+  @keyframes blink { to { visibility: hidden; } }
+
+  @media (max-width: 800px) {
+    body { overflow: auto; height: auto; min-height: 100%; padding: 1.2rem; }
+    .main { grid-template-columns: 1fr; }
+    .specs { grid-template-rows: none; grid-auto-rows: 150px; }
+    .mods { grid-template-rows: none; grid-auto-rows: auto; }
+    .title { text-align: left; }
+  }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } .bar span { width: var(--w); } }
+</style>
+</head>
+<body>
+  <header class="top">
+    <a class="back" href="index.html">← Torna all'inizio</a>
+    <div class="title">
+      <span class="kicker">// Il mio setup</span>
+      <h1>Alienware <span>15 R2</span></h1>
+    </div>
+  </header>
+
+  <main class="main">
+    <section class="col">
+      <h2>Specifiche attuali</h2>
+      <div class="specs">
+        <div class="spec">
+          <div class="head"><span class="label">Processore</span><span class="ico i-cpu"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="13" y="13" width="22" height="22" rx="2"/><rect x="19" y="19" width="10" height="10" rx="1"/><path d="M18 13V8M24 13V8M30 13V8M18 35v5M24 35v5M30 35v5M13 18H8M13 24H8M13 30H8M35 18h5M35 24h5M35 30h5"/></svg></span></div>
+          <div><div class="value">Intel Core i7-6820HK</div><div class="note">4 core, 8 thread, fino a 3,6 GHz</div></div>
+        </div>
+        <div class="spec">
+          <div class="head"><span class="label">Scheda video</span><span class="ico i-gpu"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="13" width="40" height="20" rx="2"/><circle cx="16" cy="23" r="6"/><circle cx="32" cy="23" r="6"/><path d="M16 20v6M13 23h6M32 20v6M29 23h6"/><path d="M9 33v4M15 33v4M39 33v4"/></svg></span></div>
+          <div><div class="value">NVIDIA GeForce GTX 980M</div><div class="note">4 GB GDDR5, con grafica Intel HD 530 integrata</div></div>
+        </div>
+        <div class="spec">
+          <div class="head"><span class="label">Memoria RAM</span><span class="ico i-ram"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="10" width="36" height="22" rx="1.5"/><rect x="11" y="15" width="7" height="8" rx=".8"/><rect x="21" y="15" width="7" height="8" rx=".8"/><rect x="31" y="15" width="6" height="8" rx=".8"/><path d="M10 32v6M14 32v6M18 32v6M22 32v6M26 32v6M30 32v6M34 32v6M38 32v6"/></svg></span></div>
+          <div><div class="value">16 GB DDR4 · 2133 MHz</div><div class="note">Dual channel, espandibile fino a 32 GB</div>
+            <div class="bar"><span style="--w:50%"></span></div></div>
+        </div>
+        <div class="spec">
+          <div class="head"><span class="label">Archiviazione</span><span class="ico i-disk"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="12" width="32" height="20" rx="2"/><path d="M12 28h24"/><circle cx="14" cy="20" r="1.2"/><rect x="30" y="18" width="6" height="4" rx=".6"/><path d="M14 36h20v-4"/></svg></span></div>
+          <div><div class="value">SSD NVMe 512 GB + SSD SATA 1 TB</div><div class="note">Sistema sull'NVMe, dati sul SSD da 2,5 pollici</div></div>
+        </div>
+        <div class="spec os">
+          <svg class="bg-logo" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0Zm6.267 2.784L13.03 5.54l8.05-.179-8.05 3.333-2.154 2.688 5.007 9.038-1.536-1.605 1.645 3.456-4.937-5.527-6.268-6.28L2.77 12.11l.7-3.442 4.018-.261.823-4.06Z"/></svg>
+          <div class="head"><span class="label">Sistema operativo</span><span class="ico i-linux"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="9" width="38" height="30" rx="3"/><path d="M5 16h38"/><path d="M12 24l5 4-5 4M22 33h12"/></svg></span></div>
+          <div><div class="value">Parrot Security 7.4 (Linux)</div><div class="note">Installato come sistema principale, con configurazione personalizzata</div></div>
+        </div>
+        <div class="spec">
+          <div class="head"><span class="label">Illuminazione</span><span class="ico i-light"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="15" width="40" height="19" rx="3"/><path d="M9 21h3M15 21h3M21 21h3M27 21h3M33 21h3M39 21h0M9 27h3M15 27h18M36 27h3"/></svg></span></div>
+          <div><div class="value">AlienFX personalizzato</div><div class="note">Luci della tastiera e del logo gestite con un controllo dedicato</div></div>
+        </div>
+        <div class="spec">
+          <div class="head"><span class="label">Schermo</span><span class="ico i-screen"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="7" width="38" height="25" rx="2"/><path d="M19 32l-2 7h12l-2-7M14 40h20"/></svg></span></div>
+          <div><div class="value">Full HD 15,6 pollici</div><div class="note">1920 × 1080 pixel</div></div>
+        </div>
+        <div class="spec">
+          <div class="head"><span class="label">Batteria</span><span class="ico i-batt"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="15" width="34" height="18" rx="2.5"/><rect x="41" y="21" width="3" height="6" rx=".8"/><rect x="9" y="19" width="20" height="10" rx="1" fill="currentColor" fill-opacity=".5" stroke="none"/></svg></span></div>
+          <div><div class="value">Capacità circa 78%</div><div class="note">Autonomia fino a circa 6 ore, a seconda dell'uso · 75 Wh attuali su 96,5 Wh di progetto</div>
+            <div class="bar"><span style="--w:78%"></span></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="col">
+      <h2>Dal 2015 a oggi</h2>
+      <ul class="mods">
+        <li>Disco meccanico sostituito da SSD: un 1 TB SATA e un NVMe da 512 GB
+          <span>Avvii e caricamenti molto più rapidi rispetto al disco meccanico originale.</span></li>
+        <li>Passaggio da Windows a Parrot OS (Linux)
+          <span>Sistema principale con configurazione personalizzata.</span></li>
+        <li>Tasti macro e illuminazione AlienFX personalizzati
+          <span>Mappatura dei tasti macro e controllo delle luci, configurati su Linux con codici che ho individuato e programmato.</span></li>
+        <li>Batteria sostituita, capacità attuale circa 78%
+          <span>Sostituita anni fa, non è più quella di fabbrica. Ancora utilizzabile, con gestione dell'energia ottimizzata.</span></li>
+        <li>Manutenzione termica: repaste CPU e GPU
+          <span>Maggio 2026 · temperature sotto controllo sia a riposo sia sotto carico.</span></li>
+      </ul>
+      <div class="why">
+        <h2>Perché Parrot OS</h2>
+        <p>Ho scelto Parrot OS non per l'hacking o i test di penetrazione, ma per migliorare la velocità di elaborazione e di lavoro. Questo computer è del 2015 e ha <b id="age">quasi 11 anni</b>: con un sistema più leggero riesco a farlo andare meglio.</p>
+      </div>
+    </section>
+  </main>
+
+  <p class="footer"><b>●</b> Setup in continuo aggiornamento</p>
+  <script>
+    // Età del computer calcolata dalla data d'ordine (06/11/2015)
+    (function () {
+      const start = new Date(2015, 10, 6);
+      const now = new Date();
+      let months = (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth());
+      if (now.getDate() < start.getDate()) months -= 1;
+      const years = Math.floor(months / 12), rem = months % 12;
+      const plural = (n, s, p) => n + " " + (n === 1 ? s : p);
+      let txt = plural(years, "anno", "anni");
+      if (rem > 0) txt += " e " + plural(rem, "mese", "mesi");
+      document.getElementById("age").textContent = txt;
+    })();
+  </script>
+</body>
+</html>
