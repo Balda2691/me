@@ -257,6 +257,21 @@
   .lang.open button:not(.on):hover { background: rgba(255,255,255,.12); }
   .lang button:focus-visible { outline: 2px solid #ffb27a; outline-offset: 2px; }
   .mods .mt { display: inline; font-size: inherit; color: inherit; }
+
+  /* ===== Globo terrestre ===== */
+  .globe { position: relative; z-index: 1; text-align: center; margin: 1.6rem auto 0; padding: 0 1rem; }
+  .globe-stage { position: relative; width: min(88vw, 480px); aspect-ratio: 1 / 1; margin: 0 auto; touch-action: none; cursor: grab; }
+  .globe-stage:active { cursor: grabbing; }
+  #globe { width: 100%; height: 100%; display: block; }
+  .globe-tip { position: absolute; transform: translate(-50%, -140%); pointer-events: none; white-space: nowrap;
+    background: rgba(7,10,22,.82); border: 1px solid rgba(255,178,122,.55); padding: 6px 14px; border-radius: 999px; color: #fff4e4;
+    font-family: Georgia, "Times New Roman", serif; font-style: italic; font-size: 1rem;
+    box-shadow: 0 0 18px rgba(255,160,100,.35); }
+  .globe-tip[hidden] { display: none; }
+  .globe-tip small { display: block; font-family: system-ui, -apple-system, sans-serif; font-style: normal; font-size: .64rem;
+    letter-spacing: .14em; text-transform: uppercase; color: #ffd9b8; }
+  .globe-hint { margin-top: 1rem; font-family: system-ui, -apple-system, sans-serif; font-size: .74rem; letter-spacing: .12em; text-transform: uppercase; color: #cbb98f; }
+  .globe-legend { margin-top: .4rem; font-style: italic; color: #fff1e0; font-size: .95rem; text-shadow: 0 1px 6px rgba(5,8,22,.7); }
 </style>
 </head>
 <body>
@@ -272,8 +287,7 @@
     <p class="lead" data-i18n="lead">Le tappe del mio viaggio, segnate sulla carta.</p>
   </main>
 
-  <section class="map">
-    <div class="map-scroll">
+<template id="geo-src">
     <svg viewBox="0 0 1000 500" preserveAspectRatio="xMidYMid slice" role="img" data-i18n-aria="map_label">
         <defs>
           <linearGradient id="glassAmber" x1="0" y1="0" x2="0" y2="1">
@@ -319,22 +333,20 @@
           <text x="667.5" y="184.0" class="lbl" data-i18n="p_dubai">Dubai</text>
         </g>
     </svg>
+  </template>
 
+  <section class="globe">
+    <div class="globe-stage" id="globe-stage">
+      <canvas id="globe" role="img" aria-label="Globo terrestre con i luoghi visitati"></canvas>
+      <div class="zoom-ctrl globe-zoom" aria-label="Zoom globo">
+        <button type="button" id="gz-in" aria-label="Zoom avanti">+</button>
+        <button type="button" id="gz-out" aria-label="Zoom indietro">−</button>
+        <button type="button" id="gz-rst" class="rst" aria-label="Ripristina zoom">⟲</button>
+      </div>
+      <div class="globe-tip" id="globe-tip" hidden><span id="tip-name"></span><small id="tip-years"></small></div>
     </div>
-    <div class="swipe-hint" data-i18n="hint">↔ scorri · pizzica per zoomare</div>
-    <div class="zoom-ctrl" aria-label="Zoom mappa">
-      <button type="button" id="zin" data-i18n-aria="zin">+</button>
-      <button type="button" id="zout" data-i18n-aria="zout">−</button>
-      <button type="button" id="zrst" class="rst" data-i18n-aria="zrst">⟲</button>
-    </div>
-    <svg class="compass" viewBox="0 0 100 100" aria-hidden="true">
-      <circle cx="50" cy="50" r="46" fill="#efe3c4" stroke="#7a5a33" stroke-width="2"/>
-      <circle cx="50" cy="50" r="38" fill="none" stroke="#7a5a33" stroke-width="1"/>
-      <path d="M50 8 L56 50 L50 92 L44 50 Z" fill="#a8372b"/>
-      <path d="M8 50 L50 44 L92 50 L50 56 Z" fill="#7a5a33"/>
-      <text x="50" y="24" text-anchor="middle" font-size="11" fill="#3b2a18" font-family="Georgia,serif">N</text>
-    </svg>
-    <div class="caption" data-i18n="caption">Ambra: paesi visitati · Verde: casa · 6 luoghi</div>
+    <p class="globe-hint" id="globe-hint"></p>
+    <p class="globe-legend" id="globe-legend"></p>
   </section>
 
   <main class="wrap">
@@ -530,80 +542,270 @@ const I18N = {
       }
     })();
   </script>
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
   <script>
-    // Mappa: scorrimento, pizzico per zoomare, pulsanti +/− e centratura sulle tappe
-    (function () {
-      const box = document.querySelector(".map-scroll");
-      if (!box) return;
-      const svg = box.querySelector("svg");
-      const mq = matchMedia("(max-width: 700px)");
-      const MAX = 4, MIN = 1;
-      let L = 1, bw = 0, bh = 0, pinchD = 0, first = true;
+  (function () {
+    var GT = {
+      it: { hint: "Trascina per ruotare · tocca un luogo per raggiungerlo", legend: "Ambra: paesi visitati · Verde: casa" },
+      en: { hint: "Drag to rotate · tap a place to fly there", legend: "Amber: countries visited · Green: home" },
+      ru: { hint: "Тяни, чтобы вращать · коснись места, чтобы перелететь", legend: "Янтарный: посещённые страны · Зелёный: дом" }
+    };
+    var g = GT[window.LANG] || GT.it;
+    var stage = document.getElementById("globe-stage");
+    var canvas = document.getElementById("globe");
+    var tip = document.getElementById("globe-tip");
+    var tipName = document.getElementById("tip-name");
+    var tipYears = document.getElementById("tip-years");
+    var ctx = canvas.getContext("2d");
+    document.getElementById("globe-hint").textContent = g.hint;
+    document.getElementById("globe-legend").textContent = g.legend;
+    var src = document.getElementById("geo-src").content;
 
-      const xs = [...document.querySelectorAll(".pin")].map(p => parseFloat(p.dataset.x)).filter(n => !isNaN(n));
-      const tapCenter = xs.length ? (Math.min(...xs) + Math.max(...xs)) / 2 / 1000 : 0.5;
+    // Coordinate della mappa piatta (1000x500, equirettangolare) -> lon/lat
+    function toLL(x, y) { return [x / 1000 * 360 - 180, 90 - y / 500 * 180]; }
 
-      function base() {
-        bw = box.clientWidth * (mq.matches ? 1.9 : 1);
-        if (mq.matches) { bh = bw / 2; box.style.height = bh + "px"; }
-        else { box.style.height = ""; bh = box.clientHeight; }
+    function ringsOf(el) {
+      var toks = el.getAttribute("d").match(/[MLZ]|-?\d*\.?\d+/g);
+      var out = [], cur = null, k = 0, cmd = "M";
+      while (k < toks.length) {
+        var t = toks[k];
+        if (/^[MLZ]$/.test(t)) {
+          cmd = t; k++;
+          if (cmd === "Z") { if (cur) { out.push(cur); cur = null; } }
+          else if (cmd === "M" && cur) { out.push(cur); cur = null; }
+          continue;
+        }
+        var x = parseFloat(toks[k]), y = parseFloat(toks[k + 1]); k += 2;
+        if (!cur) cur = [[x, y]];
+        else if (Math.abs(x - cur[cur.length - 1][0]) > 500) { out.push(cur); cur = [[x, y]]; } // linea del 180°
+        else cur.push([x, y]);
       }
-      function draw(cx, cy) {
-        // cx, cy: punto da mantenere fermo, in coordinate del riquadro visibile
-        const oldR = svg.getBoundingClientRect(); const oldW = oldR.width || bw, oldH = oldR.height || bh;
-        const fx = (box.scrollLeft + cx) / oldW, fy = (box.scrollTop + cy) / oldH;
-        svg.style.width = bw * L + "px";
-        svg.style.height = bh * L + "px";
-        box.scrollLeft = fx * bw * L - cx;
-        box.scrollTop = fy * bh * L - cy;
-      }
-      function setZoom(nl, cx, cy) {
-        nl = Math.min(MAX, Math.max(MIN, nl));
-        if (nl === L) return;
-        L = nl;
-        draw(cx ?? box.clientWidth / 2, cy ?? box.clientHeight / 2);
-      }
-      function centerOnTrips() {
-        box.scrollLeft = tapCenter * bw * L - box.clientWidth / 2;
-      }
-      function refresh() {
-        const wasFirst = first;
-        base();
-        svg.style.width = bw * L + "px";
-        svg.style.height = bh * L + "px";
-        if (wasFirst) { centerOnTrips(); first = false; }
-      }
+      if (cur) out.push(cur);
+      return out.filter(function (r) { return r.length > 2; }).map(function (r) {
+        var ll = r.map(function (p) { return toLL(p[0], p[1]); });
+        var f = ll[0], l = ll[ll.length - 1];
+        if (f[0] !== l[0] || f[1] !== l[1]) ll.push(f);
+        // d3 si aspetta anelli esterni in senso orario
+        var area = 0;
+        for (var i = 0; i < ll.length - 1; i++) area += ll[i][0] * ll[i + 1][1] - ll[i + 1][0] * ll[i][1];
+        return area > 0 ? ll.reverse() : ll;
+      });
+    }
 
-      document.getElementById("zin").addEventListener("click", () => setZoom(L * 1.5));
-      document.getElementById("zout").addEventListener("click", () => setZoom(L / 1.5));
-      document.getElementById("zrst").addEventListener("click", () => {
-        L = 1; svg.style.width = bw + "px"; svg.style.height = bh + "px"; centerOnTrips();
+    function feats(sel) {
+      var fs = [];
+      src.querySelectorAll(sel).forEach(function (el) {
+        ringsOf(el).forEach(function (r) { fs.push({ type: "Feature", geometry: { type: "Polygon", coordinates: [r] } }); });
+      });
+      return fs;
+    }
+
+    var landF = feats("path.land"), visF = feats("path.visited"), homeF = feats("path.home");
+
+    var pins = [];
+    src.querySelectorAll("g.pin").forEach(function (gEl) {
+      var x = parseFloat(gEl.getAttribute("data-x")), y = parseFloat(gEl.getAttribute("data-y"));
+      var ll = toLL(x, y);
+      var key = gEl.querySelector("text").getAttribute("data-i18n");
+      pins.push({ lon: ll[0], lat: ll[1], key: key, dkey: key.replace("p_", "d_"), s: null, vis: false });
+    });
+
+    var proj = d3.geoOrthographic().clipAngle(90).precision(0.4);
+    var path = d3.geoPath(proj, ctx);
+    var grat = d3.geoGraticule10();
+    var sphere = { type: "Sphere" };
+
+    var W = 0, H = 0, R = 0, DPR = 1;
+    function resize() {
+      var r = stage.getBoundingClientRect();
+      W = r.width; H = r.height; DPR = window.devicePixelRatio || 1;
+      canvas.width = Math.round(W * DPR); canvas.height = Math.round(H * DPR);
+      R = Math.min(W, H) * 0.43 * Z;
+      proj.translate([W / 2, H / 2]).scale(R);
+    }
+
+    var lam = 15, phi = 28;           // centro della vista (lon, lat)
+    var vel = 0, dragging = false, moved = 0, lastX = 0, lastY = 0, lastTouch = 0;
+    var flying = null, focusIdx = -1, hoverIdx = -1;
+    var Z = 1, ZMIN = 1, ZMAX = 3, pts = new Map(), pinchD = 0;
+    function setZoom(z) {
+      Z = Math.max(ZMIN, Math.min(ZMAX, z));
+      R = Math.min(W, H) * 0.43 * Z;
+      proj.scale(R);
+    }
+    function dist2() {
+      var v = Array.from(pts.values());
+      return Math.hypot(v[0][0] - v[1][0], v[0][1] - v[1][1]);
+    }
+
+    function clampPhi(v) { return Math.max(-80, Math.min(80, v)); }
+
+    function draw(now) {
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+      ctx.clearRect(0, 0, W, H);
+      proj.rotate([-lam, -phi]);
+      var cx = W / 2, cy = H / 2;
+
+      // atmosfera
+      var atm = ctx.createRadialGradient(cx, cy, R * 0.96, cx, cy, R * 1.18);
+      atm.addColorStop(0, "rgba(110,200,255,.34)"); atm.addColorStop(0.45, "rgba(70,140,255,.10)"); atm.addColorStop(1, "rgba(70,140,255,0)");
+      ctx.fillStyle = atm; ctx.beginPath(); ctx.arc(cx, cy, R * 1.18, 0, Math.PI * 2); ctx.fill();
+
+      // oceano
+      var og = ctx.createRadialGradient(cx - R * 0.35, cy - R * 0.4, R * 0.05, cx, cy, R);
+      og.addColorStop(0, "#27488f"); og.addColorStop(0.55, "#0f1f4d"); og.addColorStop(1, "#060b1f");
+      ctx.beginPath(); path(sphere); ctx.fillStyle = og; ctx.fill();
+
+      // reticolo
+      ctx.beginPath(); path(grat); ctx.strokeStyle = "rgba(140,180,255,.16)"; ctx.lineWidth = 0.6; ctx.stroke();
+
+      // terre
+      ctx.beginPath(); landF.forEach(function (f) { path(f); });
+      ctx.fillStyle = "#1a2d5c"; ctx.fill();
+      ctx.strokeStyle = "rgba(130,190,255,.6)"; ctx.lineWidth = 0.8; ctx.stroke();
+
+      // paesi visitati (ambra luminosa)
+      ctx.save(); ctx.shadowColor = "rgba(255,160,100,.95)"; ctx.shadowBlur = 14;
+      ctx.beginPath(); visF.forEach(function (f) { path(f); });
+      ctx.fillStyle = "rgba(255,150,95,.85)"; ctx.fill(); ctx.restore();
+      ctx.beginPath(); visF.forEach(function (f) { path(f); });
+      ctx.strokeStyle = "rgba(255,225,200,.9)"; ctx.lineWidth = 0.9; ctx.stroke();
+
+      // casa (verde luminoso)
+      ctx.save(); ctx.shadowColor = "rgba(57,255,154,1)"; ctx.shadowBlur = 16;
+      ctx.beginPath(); homeF.forEach(function (f) { path(f); });
+      ctx.fillStyle = "rgba(57,255,154,.9)"; ctx.fill(); ctx.restore();
+      ctx.beginPath(); homeF.forEach(function (f) { path(f); });
+      ctx.strokeStyle = "rgba(200,255,225,.95)"; ctx.lineWidth = 0.9; ctx.stroke();
+
+      // ombreggiatura sferica
+      var sh = ctx.createRadialGradient(cx - R * 0.25, cy - R * 0.3, R * 0.55, cx, cy, R);
+      sh.addColorStop(0, "rgba(0,0,0,0)"); sh.addColorStop(1, "rgba(0,0,0,.6)");
+      ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2); ctx.fillStyle = sh; ctx.fill();
+
+      // tappe
+      pins.forEach(function (p, i) {
+        var q = [p.lon, p.lat];
+        p.vis = d3.geoDistance(q, [lam, phi]) < Math.PI / 2 - 0.03;
+        if (!p.vis) { p.s = null; return; }
+        var xy = proj(q); p.s = xy;
+        var pulse = 0.5 + 0.5 * Math.sin(now / 520 + i * 1.3);
+        ctx.save(); ctx.shadowColor = "rgba(255,190,130,1)"; ctx.shadowBlur = 10 + pulse * 8;
+        ctx.beginPath(); ctx.arc(xy[0], xy[1], 3.2, 0, Math.PI * 2); ctx.fillStyle = "#ffe2c4"; ctx.fill(); ctx.restore();
+        ctx.beginPath(); ctx.arc(xy[0], xy[1], 6 + pulse * 5, 0, Math.PI * 2);
+        ctx.strokeStyle = "rgba(255,190,130," + (0.55 - 0.45 * pulse).toFixed(3) + ")"; ctx.lineWidth = 1; ctx.stroke();
       });
 
-      function dist(t) { return Math.hypot(t[0].clientX - t[1].clientX, t[0].clientY - t[1].clientY); }
-      function mid(t) {
-        const r = box.getBoundingClientRect();
-        return [(t[0].clientX + t[1].clientX) / 2 - r.left, (t[0].clientY + t[1].clientY) / 2 - r.top];
-      }
-      box.addEventListener("touchstart", e => {
-        if (e.touches.length === 2) pinchD = dist(e.touches);
-      }, { passive: true });
-      box.addEventListener("touchmove", e => {
-        if (e.touches.length !== 2) return;
-        e.preventDefault();
-        const d = dist(e.touches);
-        if (pinchD) {
-          const [mx, my] = mid(e.touches);
-          setZoom(L * d / pinchD, mx, my);
-        }
-        pinchD = d;
-      }, { passive: false });
-      box.addEventListener("touchend", () => { pinchD = 0; }, { passive: true });
+      // bordo luminoso
+      ctx.beginPath(); ctx.arc(cx, cy, R, 0, Math.PI * 2);
+      ctx.strokeStyle = "rgba(160,215,255,.45)"; ctx.lineWidth = 1.2; ctx.stroke();
+    }
 
-      refresh();
-      let t;
-      addEventListener("resize", () => { clearTimeout(t); t = setTimeout(refresh, 150); });
-    })();
+    function pinAt(px, py) {
+      var best = -1, bd = 22;
+      pins.forEach(function (p, i) {
+        if (!p.s) return;
+        var d = Math.hypot(p.s[0] - px, p.s[1] - py);
+        if (d < bd) { bd = d; best = i; }
+      });
+      return best;
+    }
+
+    function fly(i) {
+      var p = pins[i];
+      var d = ((p.lon - lam + 540) % 360 + 360) % 360 - 180;
+      flying = { t0: performance.now(), dur: 1400, l0: lam, l1: lam + d, p0: phi, p1: p.lat };
+      focusIdx = i; vel = 0;
+    }
+
+    function updateTip() {
+      var idx = hoverIdx >= 0 ? hoverIdx : (flying ? -1 : focusIdx);
+      var p = idx >= 0 ? pins[idx] : null;
+      if (!p || !p.s) { tip.hidden = true; return; }
+      tipName.textContent = S[p.key] || "";
+      tipYears.textContent = S[p.dkey] || "";
+      tipYears.hidden = !S[p.dkey];
+      tip.style.left = p.s[0] + "px";
+      tip.style.top = p.s[1] + "px";
+      tip.hidden = false;
+    }
+
+    var last = performance.now();
+    function frame(now) {
+      var dt = Math.min(64, now - last); last = now;
+      if (flying) {
+        var u = Math.min(1, (now - flying.t0) / flying.dur);
+        var e = u < 0.5 ? 2 * u * u : 1 - Math.pow(-2 * u + 2, 2) / 2;
+        lam = flying.l0 + (flying.l1 - flying.l0) * e;
+        phi = flying.p0 + (flying.p1 - flying.p0) * e;
+        if (u >= 1) { flying = null; lastTouch = now; }
+      } else if (!dragging) {
+        if (Math.abs(vel) > 0.01) { lam += vel; vel *= 0.93; }
+        else if (now - lastTouch > 3000 && focusIdx < 0) { lam += dt * 0.004; }
+      }
+      phi = clampPhi(phi);
+      draw(now);
+      updateTip();
+      requestAnimationFrame(frame);
+    }
+
+    function localXY(e) { var r = canvas.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; }
+
+    canvas.addEventListener("pointerdown", function (e) {
+      pts.set(e.pointerId, [e.clientX, e.clientY]);
+      canvas.setPointerCapture(e.pointerId);
+      if (pts.size > 1) { dragging = false; moved = 99; pinchD = dist2(); return; }
+      dragging = true; moved = 0; lastX = e.clientX; lastY = e.clientY; vel = 0; flying = null;
+      lastTouch = performance.now();
+    });
+    canvas.addEventListener("pointermove", function (e) {
+      if (pts.has(e.pointerId)) pts.set(e.pointerId, [e.clientX, e.clientY]);
+      if (pts.size > 1) {
+        var d = dist2();
+        if (pinchD) setZoom(Z * d / pinchD);
+        pinchD = d; lastTouch = performance.now();
+        return;
+      }
+      if (dragging) {
+        var dx = e.clientX - lastX, dy = e.clientY - lastY;
+        lastX = e.clientX; lastY = e.clientY;
+        moved += Math.abs(dx) + Math.abs(dy);
+        var k = 180 / (Math.PI * R);
+        vel = -dx * k * 0.9;
+        lam += -dx * k * 0.9;
+        phi = clampPhi(phi + dy * k * 0.9);
+        lastTouch = performance.now();
+      } else if (e.pointerType === "mouse") {
+        var xy = localXY(e); hoverIdx = pinAt(xy[0], xy[1]);
+      }
+    });
+    function endPointer(e) {
+      var wasPinch = pts.size > 1;
+      pts.delete(e.pointerId);
+      if (pts.size === 0) pinchD = 0;
+      if (wasPinch || !dragging) { dragging = false; return; }
+      dragging = false; lastTouch = performance.now();
+      if (moved < 8) {
+        var xy = localXY(e); var i = pinAt(xy[0], xy[1]);
+        if (i >= 0) fly(i); else { focusIdx = -1; vel = 0; }
+      }
+    }
+    canvas.addEventListener("pointerup", endPointer);
+    canvas.addEventListener("pointercancel", endPointer);
+    canvas.addEventListener("wheel", function (e) {
+      e.preventDefault();
+      setZoom(Z * Math.exp(-e.deltaY * 0.0015));
+      lastTouch = performance.now();
+    }, { passive: false });
+    document.getElementById("gz-in").addEventListener("click", function () { setZoom(Z * 1.4); });
+    document.getElementById("gz-out").addEventListener("click", function () { setZoom(Z / 1.4); });
+    document.getElementById("gz-rst").addEventListener("click", function () { setZoom(1); });
+    canvas.addEventListener("pointerleave", function () { hoverIdx = -1; });
+
+    resize();
+    window.addEventListener("resize", resize);
+    requestAnimationFrame(frame);
+  })();
   </script>
 </body>
 </html>
