@@ -170,6 +170,25 @@
   .build i:nth-child(2) { animation-delay: .2s; }
   .build i:nth-child(3) { animation-delay: .4s; }
   @keyframes blinkDot { 0%,80%,100% { opacity: .2; } 40% { opacity: 1; } }
+
+  /* ===== Ottimizzazione mobile ===== */
+  @media (max-width: 600px) {
+    body { min-height: 100vh; min-height: 100dvh; padding: 2rem 1rem 2.4rem; }
+    h1 { font-size: clamp(2rem, 11vw, 2.8rem); }
+    .menu { gap: .9rem; margin-top: 2rem; }
+    .menu > .card { padding: 1.3rem .9rem 1.1rem; }
+    .card strong { font-size: 1.1rem; }
+    .card small { font-size: .85rem; }
+    .social { gap: .7rem; margin-top: 1.2rem; }
+    .glass { font-size: .85rem; padding: .55rem 1.1rem .55rem .7rem; }
+    .footer { margin-top: 2.2rem; }
+  }
+  @media (hover: none) {
+    /* Su touch l'hover resta "appiccicato" dopo il tap: lo disattiviamo */
+    .menu > .card:hover, .glass:hover { transform: none; }
+    .menu > .card:hover { box-shadow: 0 12px 30px rgba(0,0,0,.35); }
+    .card:hover .ico { filter: none; }
+  }
 </style>
 </head>
 <body>
