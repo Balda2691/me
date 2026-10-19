@@ -189,23 +189,41 @@
     .menu > .card:hover { box-shadow: 0 12px 30px rgba(0,0,0,.35); }
     .card:hover .ico { filter: none; }
   }
+
+  /* ===== Selettore lingua: una bandiera, al tocco si espande ===== */
+  .lang { position: fixed; top: 10px; right: 10px; z-index: 10001; display: flex; gap: 4px; align-items: center;
+    padding: 3px; border-radius: 999px; background: rgba(7,10,22,.45); border: 1px solid rgba(255,255,255,.12);
+    backdrop-filter: blur(10px) saturate(150%); -webkit-backdrop-filter: blur(10px) saturate(150%); }
+  .lang button { font-size: 1.05rem; line-height: 1; width: 34px; height: 30px; padding: 0; border-radius: 999px; cursor: pointer;
+    background: transparent; border: 1px solid transparent; opacity: .9; transition: opacity .3s, border-color .3s, background .3s; }
+  .lang button.on { border-color: rgba(255,214,170,.7); background: rgba(255,255,255,.08); }
+  .lang button:not(.on) { display: none; }
+  .lang.open button:not(.on) { display: inline-block; }
+  .lang.open button:not(.on):hover { background: rgba(255,255,255,.12); }
+  .lang button:focus-visible { outline: 2px solid #ffb27a; outline-offset: 2px; }
+  .mods .mt { display: inline; font-size: inherit; color: inherit; }
 </style>
 </head>
 <body>
-  <div id="intro" title="Clicca per entrare">
+  <nav class="lang" aria-label="Lingua">
+    <button type="button" data-lang="it" title="Italiano">🇮🇹</button>
+    <button type="button" data-lang="en" title="English">🇬🇧</button>
+    <button type="button" data-lang="ru" title="Русский">🇷🇺</button>
+  </nav>
+  <div id="intro" data-i18n-title="intro_skip">
     <svg viewBox="0 0 200 200" aria-hidden="true">
       <circle class="ring" cx="100" cy="100" r="90"/>
       <circle class="ring2" cx="100" cy="100" r="76"/>
       <text class="letters" x="100" y="116" text-anchor="middle">MB</text>
     </svg>
     <div class="line"></div>
-    <p class="sub">Laboratorio personale</p>
-    <span class="skip">Clicca per entrare</span>
+    <p class="sub" data-i18n="intro_sub">Laboratorio personale</p>
+    <span class="skip" data-i18n="intro_skip">Clicca per entrare</span>
   </div>
   <div class="stars" id="stars"></div>
 
   <main class="wrap">
-    <p class="kicker">Portfolio personale</p>
+    <p class="kicker" data-i18n="kicker">Portfolio personale</p>
     <h1>Michele <span class="gold">Baldassarre</span></h1>
     <div class="divider"><span>✦</span></div>
     <p class="sub"><span id="typed"></span><span class="cursor"></span></p>
@@ -213,23 +231,23 @@
     <nav class="menu">
       <a class="card" href="viaggi.html">
         <span class="ico">✈️</span>
-        <strong>Viaggi</strong>
-        <small>I luoghi che ho visitato</small>
+        <strong data-i18n="viaggi_t">Viaggi</strong>
+        <small data-i18n="viaggi_s">I luoghi che ho visitato</small>
       </a>
       <div class="card locked">
         
         <span class="ico">🎯</span>
         <div class="inner">
-          <strong>Hobby</strong>
-          <small>Hardware, mercati, AI e progetti personali</small>
-          <span class="build">Sto lavorando<i>.</i><i>.</i><i>.</i></span>
+          <strong data-i18n="hobby_t">Hobby</strong>
+          <small data-i18n="hobby_s">Hardware, mercati, AI e progetti personali</small>
+          <span class="build"><span data-i18n="building">Sto lavorando</span><i>.</i><i>.</i><i>.</i></span>
         </div>
         <svg class="btc-logo" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="16" fill="#F7931A"/><text x="16" y="22.5" text-anchor="middle" font-size="20" font-weight="700" font-family="Arial, sans-serif" fill="#fff">₿</text></svg>
       </div>
       <a class="card" href="setup.html">
         <span class="ico">⚙️</span>
-        <strong>Setup</strong>
-        <small>Il mio Alienware e come lo uso</small>
+        <strong data-i18n="setup_t">Setup</strong>
+        <small data-i18n="setup_s">Il mio Alienware e come lo uso</small>
       </a>
     </nav>
     <div class="social">
@@ -242,10 +260,113 @@
     </div>
 
 
-    <p class="footer"><span class="dot"></span>Sito in costruzione</p>
-    <p class="credit">Vuoi sapere chi c'è dietro? Un tecnico curioso e un'AI che non fa domande.</p>
+    <p class="footer"><span class="dot"></span><span data-i18n="footer">Sito in costruzione</span></p>
+    <p class="credit" data-i18n="credit">Vuoi sapere chi c'è dietro? Un tecnico curioso e un'AI che non fa domande.</p>
   </main>
 
+  <script>
+const I18N = {
+ "it": {
+  "title": "Michele Baldassarre",
+  "intro_sub": "Laboratorio personale",
+  "intro_skip": "Clicca per entrare",
+  "kicker": "Portfolio personale",
+  "phrases": [
+   "Appassionato di hardware, mercati e tecnologia.",
+   "Tecnico, curioso, sempre in cerca del dettaglio.",
+   "Smonto, capisco, rimonto.",
+   "Curioso per natura, imparo più in fretta provando.",
+   "Costruisco il mio futuro, un progetto alla volta."
+  ],
+  "viaggi_t": "Viaggi",
+  "viaggi_s": "I luoghi che ho visitato",
+  "hobby_t": "Hobby",
+  "hobby_s": "Hardware, mercati, AI e progetti personali",
+  "building": "Sto lavorando",
+  "setup_t": "Setup",
+  "setup_s": "Il mio Alienware e come lo uso",
+  "footer": "Sito in costruzione",
+  "credit": "Vuoi sapere chi c'è dietro? Un tecnico curioso e un'AI che non fa domande."
+ },
+ "en": {
+  "title": "Michele Baldassarre",
+  "intro_sub": "Personal lab",
+  "intro_skip": "Tap to enter",
+  "kicker": "Personal portfolio",
+  "phrases": [
+   "Passionate about hardware, markets and technology.",
+   "Technical, curious, always after the detail.",
+   "I take it apart, understand it, put it back together.",
+   "Curious by nature, I learn faster by trying.",
+   "I build my future, one project at a time."
+  ],
+  "viaggi_t": "Travels",
+  "viaggi_s": "Places I've visited",
+  "hobby_t": "Hobbies",
+  "hobby_s": "Hardware, markets, AI and personal projects",
+  "building": "Work in progress",
+  "setup_t": "Setup",
+  "setup_s": "My Alienware and how I use it",
+  "footer": "Site under construction",
+  "credit": "Curious who's behind it? A tech enthusiast and an AI that doesn't ask questions."
+ },
+ "ru": {
+  "title": "Michele Baldassarre",
+  "intro_sub": "Личная лаборатория",
+  "intro_skip": "Нажмите, чтобы войти",
+  "kicker": "Личное портфолио",
+  "phrases": [
+   "Увлекаюсь железом, рынками и технологиями.",
+   "Технарь, любопытный, всегда ищу детали.",
+   "Разбираю, понимаю, собираю обратно.",
+   "Любопытный по натуре, быстрее учусь, когда пробую.",
+   "Строю своё будущее, по одному проекту за раз."
+  ],
+  "viaggi_t": "Путешествия",
+  "viaggi_s": "Места, где я побывал",
+  "hobby_t": "Хобби",
+  "hobby_s": "Железо, рынки, ИИ и личные проекты",
+  "building": "В работе",
+  "setup_t": "Setup",
+  "setup_s": "Мой Alienware и как я им пользуюсь",
+  "footer": "Сайт в разработке",
+  "credit": "Хотите знать, кто за этим стоит? Любознательный технарь и ИИ, который не задаёт лишних вопросов."
+ }
+};
+
+(function () {
+  var KEY = "site-lang";
+  var q = new URLSearchParams(location.search).get("lang");
+  var saved = null;
+  try { saved = localStorage.getItem(KEY); } catch (e) {}
+  var LANG = (q && I18N[q]) ? q : ((saved && I18N[saved]) ? saved : "it");
+  window.LANG = LANG;
+  window.S = I18N[LANG];
+  var s = window.S;
+  document.documentElement.lang = LANG;
+  document.title = s.title;
+  document.querySelectorAll("[data-i18n]").forEach(function (el) {
+    var v = s[el.getAttribute("data-i18n")]; if (v !== undefined) el.textContent = v; });
+  document.querySelectorAll("[data-i18n-html]").forEach(function (el) {
+    var v = s[el.getAttribute("data-i18n-html")]; if (v !== undefined) el.innerHTML = v; });
+  document.querySelectorAll("[data-i18n-aria]").forEach(function (el) {
+    var v = s[el.getAttribute("data-i18n-aria")]; if (v !== undefined) el.setAttribute("aria-label", v); });
+  document.querySelectorAll("[data-i18n-title]").forEach(function (el) {
+    var v = s[el.getAttribute("data-i18n-title")]; if (v !== undefined) el.setAttribute("title", v); });
+  var nav = document.querySelector(".lang");
+  nav.querySelectorAll("button").forEach(function (b) {
+    b.classList.toggle("on", b.getAttribute("data-lang") === LANG);
+    b.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var l = b.getAttribute("data-lang");
+      if (l === LANG) { nav.classList.toggle("open"); return; }
+      try { localStorage.setItem(KEY, l); } catch (x) {}
+      location.replace(location.pathname + location.hash);
+    });
+  });
+  document.addEventListener("click", function () { nav.classList.remove("open"); });
+})();
+</script>
   <script>
     const starsBox = document.getElementById("stars");
     for (let i = 0; i < 60; i++) {
@@ -255,7 +376,7 @@
       s.style.animationDelay = (Math.random() * 5) + "s";
       starsBox.appendChild(s);
     }
-    const phrases = ["Appassionato di hardware, mercati e tecnologia.", "Tecnico, curioso, sempre in cerca del dettaglio.", "Smonto, capisco, rimonto.", "Curioso per natura, imparo più in fretta provando.", "Costruisco il mio futuro, un progetto alla volta."];
+    const phrases = S.phrases;
     const el = document.getElementById("typed");
     let p = 0, c = 0, deleting = false;
     function type() {

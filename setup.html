@@ -128,81 +128,253 @@
     .spec:hover { transform: none; box-shadow: none; }
   }
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } .bar span { width: var(--w); } }
+
+  /* ===== Selettore lingua: una bandiera, al tocco si espande ===== */
+  .lang { position: fixed; top: 10px; right: 10px; z-index: 10001; display: flex; gap: 4px; align-items: center;
+    padding: 3px; border-radius: 999px; background: rgba(7,10,22,.45); border: 1px solid rgba(255,255,255,.12);
+    backdrop-filter: blur(10px) saturate(150%); -webkit-backdrop-filter: blur(10px) saturate(150%); }
+  .lang button { font-size: 1.05rem; line-height: 1; width: 34px; height: 30px; padding: 0; border-radius: 999px; cursor: pointer;
+    background: transparent; border: 1px solid transparent; opacity: .9; transition: opacity .3s, border-color .3s, background .3s; }
+  .lang button.on { border-color: rgba(255,214,170,.7); background: rgba(255,255,255,.08); }
+  .lang button:not(.on) { display: none; }
+  .lang.open button:not(.on) { display: inline-block; }
+  .lang.open button:not(.on):hover { background: rgba(255,255,255,.12); }
+  .lang button:focus-visible { outline: 2px solid #ffb27a; outline-offset: 2px; }
+  .mods .mt { display: inline; font-size: inherit; color: inherit; }
 </style>
 </head>
 <body>
+  <nav class="lang" aria-label="Lingua">
+    <button type="button" data-lang="it" title="Italiano">🇮🇹</button>
+    <button type="button" data-lang="en" title="English">🇬🇧</button>
+    <button type="button" data-lang="ru" title="Русский">🇷🇺</button>
+  </nav>
   <header class="top">
-    <a class="back" href="index.html">← Torna all'inizio</a>
+    <a class="back" href="index.html" data-i18n="back">← Torna all'inizio</a>
     <div class="title">
-      <span class="kicker">// Il mio setup</span>
+      <span class="kicker" data-i18n="kicker">// Il mio setup</span>
       <h1>Alienware <span>15 R2</span></h1>
     </div>
   </header>
 
   <main class="main">
     <section class="col">
-      <h2>Specifiche attuali</h2>
+      <h2 data-i18n="spec_h">Specifiche attuali</h2>
       <div class="specs">
         <div class="spec">
-          <div class="head"><span class="label">Processore</span><span class="ico i-cpu"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="13" y="13" width="22" height="22" rx="2"/><rect x="19" y="19" width="10" height="10" rx="1"/><path d="M18 13V8M24 13V8M30 13V8M18 35v5M24 35v5M30 35v5M13 18H8M13 24H8M13 30H8M35 18h5M35 24h5M35 30h5"/></svg></span></div>
-          <div><div class="value">Intel Core i7-6820HK</div><div class="note">4 core, 8 thread, fino a 3,6 GHz</div></div>
+          <div class="head"><span class="label" data-i18n="lab_cpu">Processore</span><span class="ico i-cpu"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="13" y="13" width="22" height="22" rx="2"/><rect x="19" y="19" width="10" height="10" rx="1"/><path d="M18 13V8M24 13V8M30 13V8M18 35v5M24 35v5M30 35v5M13 18H8M13 24H8M13 30H8M35 18h5M35 24h5M35 30h5"/></svg></span></div>
+          <div><div class="value">Intel Core i7-6820HK</div><div class="note" data-i18n="cpu_note">4 core, 8 thread, fino a 3,6 GHz</div></div>
         </div>
         <div class="spec">
-          <div class="head"><span class="label">Scheda video</span><span class="ico i-gpu"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="13" width="40" height="20" rx="2"/><circle cx="16" cy="23" r="6"/><circle cx="32" cy="23" r="6"/><path d="M16 20v6M13 23h6M32 20v6M29 23h6"/><path d="M9 33v4M15 33v4M39 33v4"/></svg></span></div>
-          <div><div class="value">NVIDIA GeForce GTX 980M</div><div class="note">4 GB GDDR5, con grafica Intel HD 530 integrata</div></div>
+          <div class="head"><span class="label" data-i18n="lab_gpu">Scheda video</span><span class="ico i-gpu"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="13" width="40" height="20" rx="2"/><circle cx="16" cy="23" r="6"/><circle cx="32" cy="23" r="6"/><path d="M16 20v6M13 23h6M32 20v6M29 23h6"/><path d="M9 33v4M15 33v4M39 33v4"/></svg></span></div>
+          <div><div class="value">NVIDIA GeForce GTX 980M</div><div class="note" data-i18n="gpu_note">4 GB GDDR5, con grafica Intel HD 530 integrata</div></div>
         </div>
         <div class="spec">
-          <div class="head"><span class="label">Memoria RAM</span><span class="ico i-ram"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="10" width="36" height="22" rx="1.5"/><rect x="11" y="15" width="7" height="8" rx=".8"/><rect x="21" y="15" width="7" height="8" rx=".8"/><rect x="31" y="15" width="6" height="8" rx=".8"/><path d="M10 32v6M14 32v6M18 32v6M22 32v6M26 32v6M30 32v6M34 32v6M38 32v6"/></svg></span></div>
-          <div><div class="value">16 GB DDR4 · 2133 MHz</div><div class="note">Dual channel, espandibile fino a 32 GB</div>
+          <div class="head"><span class="label" data-i18n="lab_ram">Memoria RAM</span><span class="ico i-ram"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="10" width="36" height="22" rx="1.5"/><rect x="11" y="15" width="7" height="8" rx=".8"/><rect x="21" y="15" width="7" height="8" rx=".8"/><rect x="31" y="15" width="6" height="8" rx=".8"/><path d="M10 32v6M14 32v6M18 32v6M22 32v6M26 32v6M30 32v6M34 32v6M38 32v6"/></svg></span></div>
+          <div><div class="value">16 GB DDR4 · 2133 MHz</div><div class="note" data-i18n="ram_note">Dual channel, espandibile fino a 32 GB</div>
             <div class="bar"><span style="--w:50%"></span></div></div>
         </div>
         <div class="spec">
-          <div class="head"><span class="label">Archiviazione</span><span class="ico i-disk"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="12" width="32" height="20" rx="2"/><path d="M12 28h24"/><circle cx="14" cy="20" r="1.2"/><rect x="30" y="18" width="6" height="4" rx=".6"/><path d="M14 36h20v-4"/></svg></span></div>
-          <div><div class="value">SSD NVMe 512 GB + SSD SATA 1 TB</div><div class="note">Sistema sull'NVMe, dati sul SSD da 2,5 pollici</div></div>
+          <div class="head"><span class="label" data-i18n="lab_disk">Archiviazione</span><span class="ico i-disk"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="8" y="12" width="32" height="20" rx="2"/><path d="M12 28h24"/><circle cx="14" cy="20" r="1.2"/><rect x="30" y="18" width="6" height="4" rx=".6"/><path d="M14 36h20v-4"/></svg></span></div>
+          <div><div class="value">SSD NVMe 512 GB + SSD SATA 1 TB</div><div class="note" data-i18n="disk_note">Sistema sull'NVMe, dati sul SSD da 2,5 pollici</div></div>
         </div>
         <div class="spec os">
           <svg class="bg-logo" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0Zm6.267 2.784L13.03 5.54l8.05-.179-8.05 3.333-2.154 2.688 5.007 9.038-1.536-1.605 1.645 3.456-4.937-5.527-6.268-6.28L2.77 12.11l.7-3.442 4.018-.261.823-4.06Z"/></svg>
-          <div class="head"><span class="label">Sistema operativo</span><span class="ico i-linux"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="9" width="38" height="30" rx="3"/><path d="M5 16h38"/><path d="M12 24l5 4-5 4M22 33h12"/></svg></span></div>
-          <div><div class="value">Parrot Security 7.4 (Linux)</div><div class="note">Installato come sistema principale, con configurazione personalizzata</div></div>
+          <div class="head"><span class="label" data-i18n="lab_os">Sistema operativo</span><span class="ico i-linux"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="9" width="38" height="30" rx="3"/><path d="M5 16h38"/><path d="M12 24l5 4-5 4M22 33h12"/></svg></span></div>
+          <div><div class="value">Parrot Security 7.4 (Linux)</div><div class="note" data-i18n="os_note">Installato come sistema principale, con configurazione personalizzata</div></div>
         </div>
         <div class="spec">
-          <div class="head"><span class="label">Illuminazione</span><span class="ico i-light"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="15" width="40" height="19" rx="3"/><path d="M9 21h3M15 21h3M21 21h3M27 21h3M33 21h3M39 21h0M9 27h3M15 27h18M36 27h3"/></svg></span></div>
-          <div><div class="value">AlienFX personalizzato</div><div class="note">Luci della tastiera e del logo gestite con un controllo dedicato</div></div>
+          <div class="head"><span class="label" data-i18n="lab_light">Illuminazione</span><span class="ico i-light"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="15" width="40" height="19" rx="3"/><path d="M9 21h3M15 21h3M21 21h3M27 21h3M33 21h3M39 21h0M9 27h3M15 27h18M36 27h3"/></svg></span></div>
+          <div><div class="value" data-i18n="light_value">AlienFX personalizzato</div><div class="note" data-i18n="light_note">Luci della tastiera e del logo gestite con un controllo dedicato</div></div>
         </div>
         <div class="spec">
-          <div class="head"><span class="label">Schermo</span><span class="ico i-screen"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="7" width="38" height="25" rx="2"/><path d="M19 32l-2 7h12l-2-7M14 40h20"/></svg></span></div>
-          <div><div class="value">Full HD 15,6 pollici</div><div class="note">1920 × 1080 pixel</div></div>
+          <div class="head"><span class="label" data-i18n="lab_screen">Schermo</span><span class="ico i-screen"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="7" width="38" height="25" rx="2"/><path d="M19 32l-2 7h12l-2-7M14 40h20"/></svg></span></div>
+          <div><div class="value" data-i18n="screen_value">Full HD 15,6 pollici</div><div class="note">1920 × 1080 pixel</div></div>
         </div>
         <div class="spec">
-          <div class="head"><span class="label">Batteria</span><span class="ico i-batt"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="15" width="34" height="18" rx="2.5"/><rect x="41" y="21" width="3" height="6" rx=".8"/><rect x="9" y="19" width="20" height="10" rx="1" fill="currentColor" fill-opacity=".5" stroke="none"/></svg></span></div>
-          <div><div class="value">Capacità circa 78%</div><div class="note">Autonomia fino a circa 6 ore, a seconda dell'uso · 75 Wh attuali su 96,5 Wh di progetto</div>
+          <div class="head"><span class="label" data-i18n="lab_batt">Batteria</span><span class="ico i-batt"><svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="15" width="34" height="18" rx="2.5"/><rect x="41" y="21" width="3" height="6" rx=".8"/><rect x="9" y="19" width="20" height="10" rx="1" fill="currentColor" fill-opacity=".5" stroke="none"/></svg></span></div>
+          <div><div class="value" data-i18n="batt_value">Capacità circa 78%</div><div class="note" data-i18n="batt_note">Autonomia fino a circa 6 ore, a seconda dell'uso · 75 Wh attuali su 96,5 Wh di progetto</div>
             <div class="bar"><span style="--w:78%"></span></div></div>
         </div>
       </div>
     </section>
 
     <section class="col">
-      <h2>Dal 2015 a oggi</h2>
+      <h2 data-i18n="tl_h">Dal 2015 a oggi</h2>
       <ul class="mods">
-        <li>Disco meccanico sostituito da SSD: un 1 TB SATA e un NVMe da 512 GB
-          <span>Avvii e caricamenti molto più rapidi rispetto al disco meccanico originale.</span></li>
-        <li>Passaggio da Windows a Parrot OS (Linux)
-          <span>Sistema principale con configurazione personalizzata.</span></li>
-        <li>Tasti macro e illuminazione AlienFX personalizzati
-          <span>Mappatura dei tasti macro e controllo delle luci, configurati su Linux con codici che ho individuato e programmato.</span></li>
-        <li>Batteria sostituita, capacità attuale circa 78%
-          <span>Sostituita anni fa, non è più quella di fabbrica. Ancora utilizzabile, con gestione dell'energia ottimizzata.</span></li>
-        <li>Manutenzione termica: repaste CPU e GPU
-          <span>Maggio 2026 · temperature sotto controllo sia a riposo sia sotto carico.</span></li>
+        <li><span class="mt" data-i18n="m1_t">Disco meccanico sostituito da SSD: un 1 TB SATA e un NVMe da 512 GB</span>
+          <span data-i18n="m1_s">Avvii e caricamenti molto più rapidi rispetto al disco meccanico originale.</span></li>
+        <li><span class="mt" data-i18n="m2_t">Passaggio da Windows a Parrot OS (Linux)</span>
+          <span data-i18n="m2_s">Sistema principale con configurazione personalizzata.</span></li>
+        <li><span class="mt" data-i18n="m3_t">Tasti macro e illuminazione AlienFX personalizzati</span>
+          <span data-i18n="m3_s">Mappatura dei tasti macro e controllo delle luci, configurati su Linux con codici che ho individuato e programmato.</span></li>
+        <li><span class="mt" data-i18n="m4_t">Batteria sostituita, capacità attuale circa 78%</span>
+          <span data-i18n="m4_s">Sostituita anni fa, non è più quella di fabbrica. Ancora utilizzabile, con gestione dell'energia ottimizzata.</span></li>
+        <li><span class="mt" data-i18n="m5_t">Manutenzione termica: repaste CPU e GPU</span>
+          <span data-i18n="m5_s">Maggio 2026 · temperature sotto controllo sia a riposo sia sotto carico.</span></li>
       </ul>
       <div class="why">
-        <h2>Perché Parrot OS</h2>
-        <p>Ho scelto Parrot OS non per l'hacking o i test di penetrazione, ma per migliorare la velocità di elaborazione e di lavoro. Questo computer è del 2015 e ha <b id="age">quasi 11 anni</b>: con un sistema più leggero riesco a farlo andare meglio.</p>
+        <h2 data-i18n="why_h">Perché Parrot OS</h2>
+        <p data-i18n-html="why_p"></p>
       </div>
     </section>
   </main>
 
-  <p class="footer"><b>●</b> Setup in continuo aggiornamento</p>
+  <p class="footer"><b>●</b> <span data-i18n="footer">Setup in continuo aggiornamento</span></p>
+  <script>
+const I18N = {
+ "it": {
+  "title": "Setup · Michele Baldassarre",
+  "back": "← Torna all'inizio",
+  "kicker": "// Il mio setup",
+  "spec_h": "Specifiche attuali",
+  "lab_cpu": "Processore",
+  "cpu_note": "4 core, 8 thread, fino a 3,6 GHz",
+  "lab_gpu": "Scheda video",
+  "gpu_note": "4 GB GDDR5, con grafica Intel HD 530 integrata",
+  "lab_ram": "Memoria RAM",
+  "ram_note": "Dual channel, espandibile fino a 32 GB",
+  "lab_disk": "Archiviazione",
+  "disk_note": "Sistema sull'NVMe, dati sul SSD da 2,5 pollici",
+  "lab_os": "Sistema operativo",
+  "os_note": "Installato come sistema principale, con configurazione personalizzata",
+  "lab_light": "Illuminazione",
+  "light_value": "AlienFX personalizzato",
+  "light_note": "Luci della tastiera e del logo gestite con un controllo dedicato",
+  "lab_screen": "Schermo",
+  "screen_value": "Full HD 15,6 pollici",
+  "lab_batt": "Batteria",
+  "batt_value": "Capacità circa 78%",
+  "batt_note": "Autonomia fino a circa 6 ore, a seconda dell'uso · 75 Wh attuali su 96,5 Wh di progetto",
+  "tl_h": "Dal 2015 a oggi",
+  "m1_t": "Disco meccanico sostituito da SSD: un 1 TB SATA e un NVMe da 512 GB",
+  "m1_s": "Avvii e caricamenti molto più rapidi rispetto al disco meccanico originale.",
+  "m2_t": "Passaggio da Windows a Parrot OS (Linux)",
+  "m2_s": "Sistema principale con configurazione personalizzata.",
+  "m3_t": "Tasti macro e illuminazione AlienFX personalizzati",
+  "m3_s": "Mappatura dei tasti macro e controllo delle luci, configurati su Linux con codici che ho individuato e programmato.",
+  "m4_t": "Batteria sostituita, capacità attuale circa 78%",
+  "m4_s": "Sostituita anni fa, non è più quella di fabbrica. Ancora utilizzabile, con gestione dell'energia ottimizzata.",
+  "m5_t": "Manutenzione termica: repaste CPU e GPU",
+  "m5_s": "Maggio 2026 · temperature sotto controllo sia a riposo sia sotto carico.",
+  "why_h": "Perché Parrot OS",
+  "why_p": "Ho scelto Parrot OS non per l'hacking o i test di penetrazione, ma per migliorare la velocità di elaborazione e di lavoro. Questo computer è del 2015 e ha <b id=\"age\"></b>: con un sistema più leggero riesco a farlo andare meglio.",
+  "footer": "Setup in continuo aggiornamento",
+  "age": function (y, m) { var p = function (n, s, q) { return n + ' ' + (n === 1 ? s : q); }; return p(y, 'anno', 'anni') + (m > 0 ? ' e ' + p(m, 'mese', 'mesi') : ''); }
+ },
+ "en": {
+  "title": "Setup · Michele Baldassarre",
+  "back": "← Back to start",
+  "kicker": "// My setup",
+  "spec_h": "Current specs",
+  "lab_cpu": "Processor",
+  "cpu_note": "4 cores, 8 threads, up to 3.6 GHz",
+  "lab_gpu": "Graphics card",
+  "gpu_note": "4 GB GDDR5, with integrated Intel HD 530 graphics",
+  "lab_ram": "Memory (RAM)",
+  "ram_note": "Dual channel, expandable up to 32 GB",
+  "lab_disk": "Storage",
+  "disk_note": "System on the NVMe, data on the 2.5-inch SSD",
+  "lab_os": "Operating system",
+  "os_note": "Installed as the main system, with a custom setup",
+  "lab_light": "Lighting",
+  "light_value": "Custom AlienFX",
+  "light_note": "Keyboard and logo lights controlled with a dedicated tool",
+  "lab_screen": "Display",
+  "screen_value": "15.6-inch Full HD",
+  "lab_batt": "Battery",
+  "batt_value": "Capacity about 78%",
+  "batt_note": "Runtime up to about 6 hours, depending on use · 75 Wh now vs 96.5 Wh by design",
+  "tl_h": "From 2015 to today",
+  "m1_t": "Mechanical drive replaced by SSDs: a 1 TB SATA and a 512 GB NVMe",
+  "m1_s": "Much faster boots and loading than the original mechanical drive.",
+  "m2_t": "Switched from Windows to Parrot OS (Linux)",
+  "m2_s": "Main system with a custom setup.",
+  "m3_t": "Custom macro keys and AlienFX lighting",
+  "m3_s": "Macro key mapping and light control, set up on Linux with code I found and wrote myself.",
+  "m4_t": "Battery replaced, current capacity about 78%",
+  "m4_s": "Replaced years ago, no longer the factory one. Still usable, with optimized power management.",
+  "m5_t": "Thermal maintenance: CPU and GPU repaste",
+  "m5_s": "May 2026 · temperatures under control both at idle and under load.",
+  "why_h": "Why Parrot OS",
+  "why_p": "I chose Parrot OS not for hacking or penetration testing, but to speed up processing and work. This computer dates from 2015 and is <b id=\"age\"></b> old: with a lighter system it runs better.",
+  "footer": "Setup constantly updated",
+  "age": function (y, m) { var p = function (n, s, q) { return n + ' ' + (n === 1 ? s : q); }; return p(y, 'year', 'years') + (m > 0 ? ' and ' + p(m, 'month', 'months') : ''); }
+ },
+ "ru": {
+  "title": "Setup · Michele Baldassarre",
+  "back": "← На главную",
+  "kicker": "// Мой сетап",
+  "spec_h": "Текущие характеристики",
+  "lab_cpu": "Процессор",
+  "cpu_note": "4 ядра, 8 потоков, до 3,6 ГГц",
+  "lab_gpu": "Видеокарта",
+  "gpu_note": "4 ГБ GDDR5, со встроенной графикой Intel HD 530",
+  "lab_ram": "Оперативная память",
+  "ram_note": "Двухканальная, расширяется до 32 ГБ",
+  "lab_disk": "Накопители",
+  "disk_note": "Система на NVMe, данные на 2,5-дюймовом SSD",
+  "lab_os": "Операционная система",
+  "os_note": "Основная система с собственной настройкой",
+  "lab_light": "Подсветка",
+  "light_value": "Свой AlienFX",
+  "light_note": "Подсветка клавиатуры и логотипа управляется отдельной утилитой",
+  "lab_screen": "Экран",
+  "screen_value": "Full HD, 15,6 дюйма",
+  "lab_batt": "Батарея",
+  "batt_value": "Ёмкость около 78%",
+  "batt_note": "Автономность до ~6 часов, зависит от нагрузки · сейчас 75 Вт·ч из 96,5 Вт·ч по проекту",
+  "tl_h": "С 2015 года по сегодня",
+  "m1_t": "Механический диск заменён на SSD: 1 ТБ SATA и NVMe на 512 ГБ",
+  "m1_s": "Запуск и загрузка программ заметно быстрее, чем с исходного механического диска.",
+  "m2_t": "Переход с Windows на Parrot OS (Linux)",
+  "m2_s": "Основная система с собственной настройкой.",
+  "m3_t": "Свои макро-клавиши и подсветка AlienFX",
+  "m3_s": "Назначение макро-клавиш и управление подсветкой в Linux, с кодом, который я нашёл и написал сам.",
+  "m4_t": "Батарея заменена, текущая ёмкость около 78%",
+  "m4_s": "Заменена несколько лет назад, уже не заводская. Работает, с оптимизированным управлением питанием.",
+  "m5_t": "Обслуживание охлаждения: замена термопасты CPU и GPU",
+  "m5_s": "Май 2026 · температуры в норме и в простое, и под нагрузкой.",
+  "why_h": "Почему Parrot OS",
+  "why_p": "Я выбрал Parrot OS не ради взлома или тестов на проникновение, а чтобы ускорить обработку и работу. Этому компьютеру с 2015 года, ему <b id=\"age\"></b>: с более лёгкой системой он работает лучше.",
+  "footer": "Настройка постоянно обновляется",
+  "age": function (y, m) { var p = function (d, a, b, c) { var u = d % 10, t = d % 100; if (u === 1 && t !== 11) return a; if (u >= 2 && u <= 4 && (t < 12 || t > 14)) return b; return c; }; return y + ' ' + p(y, 'год', 'года', 'лет') + (m > 0 ? ' и ' + m + ' ' + p(m, 'месяц', 'месяца', 'месяцев') : ''); }
+ }
+};
+
+(function () {
+  var KEY = "site-lang";
+  var q = new URLSearchParams(location.search).get("lang");
+  var saved = null;
+  try { saved = localStorage.getItem(KEY); } catch (e) {}
+  var LANG = (q && I18N[q]) ? q : ((saved && I18N[saved]) ? saved : "it");
+  window.LANG = LANG;
+  window.S = I18N[LANG];
+  var s = window.S;
+  document.documentElement.lang = LANG;
+  document.title = s.title;
+  document.querySelectorAll("[data-i18n]").forEach(function (el) {
+    var v = s[el.getAttribute("data-i18n")]; if (v !== undefined) el.textContent = v; });
+  document.querySelectorAll("[data-i18n-html]").forEach(function (el) {
+    var v = s[el.getAttribute("data-i18n-html")]; if (v !== undefined) el.innerHTML = v; });
+  document.querySelectorAll("[data-i18n-aria]").forEach(function (el) {
+    var v = s[el.getAttribute("data-i18n-aria")]; if (v !== undefined) el.setAttribute("aria-label", v); });
+  document.querySelectorAll("[data-i18n-title]").forEach(function (el) {
+    var v = s[el.getAttribute("data-i18n-title")]; if (v !== undefined) el.setAttribute("title", v); });
+  var nav = document.querySelector(".lang");
+  nav.querySelectorAll("button").forEach(function (b) {
+    b.classList.toggle("on", b.getAttribute("data-lang") === LANG);
+    b.addEventListener("click", function (e) {
+      e.stopPropagation();
+      var l = b.getAttribute("data-lang");
+      if (l === LANG) { nav.classList.toggle("open"); return; }
+      try { localStorage.setItem(KEY, l); } catch (x) {}
+      location.replace(location.pathname + location.hash);
+    });
+  });
+  document.addEventListener("click", function () { nav.classList.remove("open"); });
+})();
+</script>
   <script>
     // Età del computer calcolata dalla data d'ordine (06/11/2015)
     (function () {
@@ -211,10 +383,7 @@
       let months = (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth());
       if (now.getDate() < start.getDate()) months -= 1;
       const years = Math.floor(months / 12), rem = months % 12;
-      const plural = (n, s, p) => n + " " + (n === 1 ? s : p);
-      let txt = plural(years, "anno", "anni");
-      if (rem > 0) txt += " e " + plural(rem, "mese", "mesi");
-      document.getElementById("age").textContent = txt;
+      document.getElementById("age").textContent = S.age(years, rem);
     })();
   </script>
 </body>
