@@ -60,7 +60,7 @@
   .soon-text { font-family: system-ui, -apple-system, sans-serif; font-size: .62rem; letter-spacing: .3em; text-transform: uppercase;
                color: var(--gold); background: rgba(7,8,13,.7); padding: .25rem .6rem; border: 1px solid rgba(212,175,55,.4); }
 
-  .btc-logo { position: absolute; right: -20px; bottom: -20px; width: 80px; height: 80px; opacity: .9;
+  .btc-logo { position: absolute; right: 12px; top: 12px; width: 40px; height: 40px; opacity: .9;
               pointer-events: none; filter: drop-shadow(0 0 6px rgba(247,147,26,.45)); transition: transform .6s; }
   .locked:hover .btc-logo { transform: rotate(-10deg) scale(1.1); }
   .ico { font-size: 1.5rem; display: inline-block; color: var(--gold); transition: transform .6s, filter .6s; }
@@ -159,7 +159,7 @@
   @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
   /* Hobby in stile LEGO di vetro: mattoncino con bottoncini e scritta in lavorazione */
   .menu > .card.locked { --accent: #ff9a4d; background: linear-gradient(rgba(255,154,77,.22), rgba(255,154,77,.08)), rgba(12,16,28,.72);
-                         border-radius: 12px; border: 1px solid rgba(255,154,77,.6); border-bottom-width: 5px; padding-top: 1.8rem; margin-top: 12px; }
+                         border-radius: 12px; border: 1px solid rgba(255,154,77,.6); border-bottom-width: 5px; padding-top: 1.8rem; }
   .menu > .card.locked::before { content: ""; display: block; position: absolute; left: 10px; right: 10px; top: -12px; height: 14px;
                                  background-image: radial-gradient(circle at 50% 40%, rgba(255,190,140,.95) 0 3.5px, rgba(255,154,77,.9) 4px 6px, transparent 6.5px);
                                  background-size: 34px 14px; background-repeat: repeat-x; background-position: 4px 0; }
@@ -202,6 +202,62 @@
   .lang.open button:not(.on):hover { background: rgba(255,255,255,.12); }
   .lang button:focus-visible { outline: 2px solid #ffb27a; outline-offset: 2px; }
   .mods .mt { display: inline; font-size: inherit; color: inherit; }
+
+  /* ===== Schede home: vetro stile Apple ===== */
+  .menu { position: relative; isolation: isolate; }
+  .menu::before { content: ""; position: absolute; inset: -50px -30px; z-index: -1; pointer-events: none; filter: blur(34px); opacity: .95;
+    background: radial-gradient(circle at 15% 25%, rgba(212,175,55,.36), transparent 38%),
+                radial-gradient(circle at 85% 55%, rgba(255,154,77,.28), transparent 40%),
+                radial-gradient(circle at 40% 98%, rgba(57,255,154,.24), transparent 40%); }
+  .menu > .card, .menu > .card.locked {
+    background: linear-gradient(145deg, color-mix(in srgb, var(--accent) 22%, transparent), rgba(255,255,255,.04) 55%),
+                linear-gradient(145deg, rgba(255,255,255,.16), rgba(255,255,255,.03));
+    border: 1px solid rgba(255,255,255,.24);
+    backdrop-filter: blur(26px) saturate(190%); -webkit-backdrop-filter: blur(26px) saturate(190%);
+    border-radius: 22px;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.38), inset 0 -1px 0 rgba(255,255,255,.06), 0 22px 50px rgba(0,0,0,.42);
+    transition: transform .4s, box-shadow .4s, border-color .4s; }
+  .menu > .card:hover {
+    background: linear-gradient(145deg, color-mix(in srgb, var(--accent) 30%, transparent), rgba(255,255,255,.06) 55%),
+                linear-gradient(145deg, rgba(255,255,255,.2), rgba(255,255,255,.05));
+    border-color: color-mix(in srgb, var(--accent) 70%, transparent);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.42), 0 26px 56px rgba(0,0,0,.5), 0 0 30px color-mix(in srgb, var(--accent) 28%, transparent); }
+  .menu > .card .ico { filter: drop-shadow(0 0 8px color-mix(in srgb, var(--accent) 55%, transparent)); }
+  @media (prefers-reduced-motion: reduce) { .menu > .card { transition: none; } }
+
+  /* ===== PROVA 2: bordo luminoso che scorre + animazioni ===== */
+  @keyframes flowBorder { from { background-position: 0 0, 0% 50%; } to { background-position: 0 0, 200% 50%; } }
+  @keyframes floatIco { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+  @keyframes breathe { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+
+  .menu > .card, .menu > .card.locked {
+    position: relative; border: 1.5px solid transparent; border-radius: 22px; overflow: visible;
+    background:
+      linear-gradient(165deg, rgba(20,22,34,.95), rgba(8,9,16,.97)) padding-box,
+      linear-gradient(90deg, color-mix(in srgb, var(--accent) 25%, transparent), var(--accent), #fff, var(--accent), color-mix(in srgb, var(--accent) 25%, transparent)) border-box;
+    background-size: auto, 200% 100%;
+    animation: flowBorder 7s linear infinite;
+    box-shadow: 0 20px 46px rgba(0,0,0,.5);
+    backdrop-filter: none; -webkit-backdrop-filter: none;
+    transition: transform .5s cubic-bezier(.2,.8,.2,1), box-shadow .5s; }
+  .menu > .card:hover { transform: translateY(-6px);
+    box-shadow: 0 30px 60px rgba(0,0,0,.6), 0 0 42px color-mix(in srgb, var(--accent) 38%, transparent); }
+  .menu > .card::after { display: none; }
+  .menu > .card.locked::before { display: none; }
+  .menu > .card .ico { display: inline-block; animation: floatIco 4.5s ease-in-out infinite; }
+  .menu > .card:nth-child(2) .ico { animation-delay: -1.5s; }
+  .menu > .card:nth-child(3) .ico { animation-delay: -3s; }
+  .menu > .card strong { transition: letter-spacing .5s, color .5s; }
+  .menu > .card:hover strong { letter-spacing: .14em; color: #fff; }
+  .menu > .card small { transition: opacity .5s; opacity: .8; }
+  .menu > .card:hover small { opacity: 1; }
+  .menu > .card.locked { padding-top: 1.8rem; }
+  .menu > .card .lock, .menu > .card .build { animation: breathe 3s ease-in-out infinite; }
+  @media (hover: none) { .menu > .card:hover { transform: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    .menu > .card, .menu > .card .ico, .menu > .card .lock, .menu > .card .build { animation: none !important; } }
+
+
 </style>
 </head>
 <body>
@@ -260,7 +316,7 @@
     </div>
 
 
-    <p class="footer"><span class="dot"></span><span data-i18n="footer">Sito in costruzione</span></p>
+        <p class="footer"><span class="dot"></span><span data-i18n="footer">Sito in costruzione</span></p>
     <p class="credit" data-i18n="credit">Vuoi sapere chi c'è dietro? Un tecnico curioso e un'AI che non fa domande.</p>
   </main>
 
@@ -408,5 +464,6 @@ const I18N = {
       intro.addEventListener("click", end);
     })();
   </script>
+
 </body>
 </html>
