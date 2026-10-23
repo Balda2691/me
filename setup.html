@@ -142,16 +142,18 @@
   .lang button:focus-visible { outline: 2px solid #ffb27a; outline-offset: 2px; }
   .mods .mt { display: inline; font-size: inherit; color: inherit; }
   /* Lascia spazio al selettore lingua in alto a destra */
-  .top { padding-top: 3.6rem; padding-right: 76px; }
+  .top { position: relative; padding-top: 0; }
+  .top .lang { position: absolute; top: -6px; left: 0; right: auto; }
+  @media (max-width: 800px) { .top .lang { left: auto; right: 0; } }
 </style>
 </head>
 <body>
-  <nav class="lang" aria-label="Lingua">
+  <header class="top">
+    <nav class="lang" aria-label="Lingua">
     <button type="button" data-lang="it" title="Italiano">🇮🇹</button>
     <button type="button" data-lang="en" title="English">🇬🇧</button>
     <button type="button" data-lang="ru" title="Русский">🇷🇺</button>
   </nav>
-  <header class="top">
     <a class="back" href="index.html" data-i18n="back">← Torna all'inizio</a>
     <div class="title">
       <span class="kicker" data-i18n="kicker">// Il mio setup</span>
