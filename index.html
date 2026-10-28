@@ -115,6 +115,9 @@ h1 .gold{background:linear-gradient(90deg,#9a7a2a,var(--gold-2),#9a7a2a);-webkit
 .ref-bbva .bbva-code{font-family:system-ui,-apple-system,sans-serif;font-size:.85rem;color:var(--mute);text-align:center}
 .ref-bbva code{font-family:ui-monospace,Menlo,Consolas,monospace;color:var(--gold-2);background:rgba(255,255,255,.08);padding:.15rem .45rem;border-radius:8px;user-select:all}
 .modal-disclaimer{margin-top:1rem;padding-top:.9rem;border-top:1px solid rgba(255,255,255,.14);font-family:system-ui,-apple-system,sans-serif;font-size:.78rem;line-height:1.5;color:var(--mute)}
+.thanks-box{text-align:center}
+.thanks-emoji{font-size:2.4rem;line-height:1;margin-bottom:.6rem}
+.thanks-box h2{margin-bottom:1rem}
 </style>
 </head>
 <body>
@@ -192,13 +195,20 @@ h1 .gold{background:linear-gradient(90deg,#9a7a2a,var(--gold-2),#9a7a2a);-webkit
       <button type="button" class="modal-close" id="ref-close" data-i18n="ref_close">Chiudi</button>
     </div>
   </div>
+  <div class="modal" id="thanks-modal" hidden>
+    <div class="modal-box thanks-box" role="dialog" aria-modal="true" aria-labelledby="thanks-msg">
+      <p class="thanks-emoji" aria-hidden="true">🙏</p>
+      <h2 id="thanks-msg" data-i18n="thx_msg">Grazie per aver visitato il sito!</h2>
+      <button type="button" class="modal-close" id="thanks-ok" data-i18n="thx_ok">Ok</button>
+    </div>
+  </div>
   <script>
 const I18N = {
  "it": {
   "title": "Michele Baldassarre",
   "intro_sub": "Laboratorio personale",
   "intro_skip": "Clicca per entrare",
-  "ref_btn": "Banche e investimenti", "ref_t": "Conti e investimenti", "ref_note": "Link referral: se ti iscrivi tramite questi link, posso ricevere un piccolo bonus senza costi per te.", "ref_close": "Chiudi", "ref_disc": "Ognuno è responsabile delle proprie scelte di investimento. Il capitale è sempre a rischio: informati, diversifica e investi solo ciò che puoi permetterti di perdere.", "bbva_code": "Codice invito", "bbva_note": "Puoi accreditare la pensione INPS sul conto BBVA.",
+  "ref_btn": "Banche e investimenti", "ref_t": "Conti e investimenti", "ref_note": "Link referral: se ti iscrivi tramite questi link, posso ricevere un piccolo bonus senza costi per te.", "ref_close": "Chiudi", "thx_msg": "Grazie per aver visitato il sito!", "thx_ok": "Ok", "ref_disc": "Ognuno è responsabile delle proprie scelte di investimento. Il capitale è sempre a rischio: informati, diversifica e investi solo ciò che puoi permetterti di perdere.", "bbva_code": "Codice invito", "bbva_note": "Puoi accreditare la pensione INPS sul conto BBVA.",
   "kicker": "Portfolio personale",
   "phrases": [
    "Appassionato di hardware, mercati e tecnologia.",
@@ -221,7 +231,7 @@ const I18N = {
   "title": "Michele Baldassarre",
   "intro_sub": "Personal lab",
   "intro_skip": "Tap to enter",
-  "ref_btn": "Banks & investing", "ref_t": "Accounts and investing", "ref_note": "Referral links: if you sign up through these links, I may receive a small bonus at no cost to you.", "ref_close": "Close", "ref_disc": "Everyone is responsible for their own investment choices. Capital is always at risk: do your research, diversify and only invest what you can afford to lose.", "bbva_code": "Invite code", "bbva_note": "You can have your INPS pension paid into your BBVA account.",
+  "ref_btn": "Banks & investing", "ref_t": "Accounts and investing", "ref_note": "Referral links: if you sign up through these links, I may receive a small bonus at no cost to you.", "ref_close": "Close", "thx_msg": "Thanks for visiting!", "thx_ok": "OK", "ref_disc": "Everyone is responsible for their own investment choices. Capital is always at risk: do your research, diversify and only invest what you can afford to lose.", "bbva_code": "Invite code", "bbva_note": "You can have your INPS pension paid into your BBVA account.",
   "kicker": "Personal portfolio",
   "phrases": [
    "Passionate about hardware, markets and technology.",
@@ -244,7 +254,7 @@ const I18N = {
   "title": "Michele Baldassarre",
   "intro_sub": "Личная лаборатория",
   "intro_skip": "Нажмите, чтобы войти",
-  "ref_btn": "Банки и инвестиции", "ref_t": "Счета и инвестиции", "ref_note": "Реферальные ссылки: если вы регистрируетесь по ним, я могу получить небольшой бонус без доплаты с вашей стороны.", "ref_close": "Закрыть", "ref_disc": "Каждый несёт ответственность за свои инвестиционные решения. Капитал всегда подвержен риску: изучайте информацию, диверсифицируйте и инвестируйте только то, что можете позволить себе потерять.", "bbva_code": "Код приглашения", "bbva_note": "Пенсию ИНПС можно зачислять на счёт BBVA.",
+  "ref_btn": "Банки и инвестиции", "ref_t": "Счета и инвестиции", "ref_note": "Реферальные ссылки: если вы регистрируетесь по ним, я могу получить небольшой бонус без доплаты с вашей стороны.", "ref_close": "Закрыть", "thx_msg": "Спасибо за визит!", "thx_ok": "Ок", "ref_disc": "Каждый несёт ответственность за свои инвестиционные решения. Капитал всегда подвержен риску: изучайте информацию, диверсифицируйте и инвестируйте только то, что можете позволить себе потерять.", "bbva_code": "Код приглашения", "bbva_note": "Пенсию ИНПС можно зачислять на счёт BBVA.",
   "kicker": "Личное портфолио",
   "phrases": [
    "Увлекаюсь железом, рынками и технологиями.",
@@ -360,7 +370,12 @@ const I18N = {
     function open() { modal.hidden = false; document.getElementById("ref-close").focus(); }
     function close() { modal.hidden = true; }
     document.getElementById("ref-open").addEventListener("click", open);
-    document.getElementById("ref-close").addEventListener("click", close);
+    const thanks = document.getElementById("thanks-modal");
+    function showThanks() { close(); thanks.hidden = false; document.getElementById("thanks-ok").focus(); }
+    function closeThanks() { thanks.hidden = true; }
+    document.getElementById("ref-close").addEventListener("click", showThanks);
+    document.getElementById("thanks-ok").addEventListener("click", closeThanks);
+    thanks.addEventListener("click", function (e) { if (e.target === thanks) closeThanks(); });
     modal.addEventListener("click", function (e) { if (e.target === modal) close(); });
     document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !modal.hidden) close(); });
   })();
