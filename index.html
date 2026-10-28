@@ -94,6 +94,27 @@ h1 .gold{background:linear-gradient(90deg,#9a7a2a,var(--gold-2),#9a7a2a);-webkit
 }
 @media (max-width:420px){.menu{grid-template-columns:1fr}}
 @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+
+/* Pulsante e popup link referral */
+.ref-open{cursor:pointer;font:inherit}
+.modal{position:fixed;inset:0;z-index:9000;display:flex;align-items:center;justify-content:center;padding:1.2rem;background:rgba(3,4,8,.6);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);opacity:1;transition:opacity .25s}
+.modal[hidden]{display:none}
+.modal-box{width:min(440px,100%);max-height:86dvh;overflow:auto;padding:1.4rem 1.3rem;border-radius:24px;background:linear-gradient(160deg,rgba(212,175,55,.14),rgba(255,255,255,.03) 60%),rgba(14,16,26,.92);border:1px solid rgba(255,255,255,.18);box-shadow:inset 0 1px 0 rgba(255,255,255,.2),0 30px 60px rgba(0,0,0,.6);color:var(--ink);animation:rise .3s ease both}
+.modal-box h2{font-weight:400;font-size:1.3rem;margin-bottom:.4rem}
+.modal-note{font-family:system-ui,-apple-system,sans-serif;font-size:.8rem;line-height:1.5;color:var(--mute);margin-bottom:1rem}
+.ref-list{list-style:none;display:grid;gap:.6rem}
+.ref-list a{display:flex;align-items:center;justify-content:space-between;gap:.8rem;padding:.8rem 1rem;border-radius:16px;text-decoration:none;color:var(--ink);font-family:system-ui,-apple-system,sans-serif;font-size:.95rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);transition:background .25s,border-color .25s}
+.ref-list a::after{content:"↗";color:var(--gold)}
+@media (hover:hover){.ref-list a:hover{background:rgba(255,255,255,.12);border-color:var(--gold)}}
+.modal-close{margin-top:1rem;width:100%;padding:.7rem;border-radius:999px;cursor:pointer;color:var(--ink);font-family:system-ui,-apple-system,sans-serif;font-size:.85rem;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.2)}
+.bbva-note{margin-top:.9rem;font-family:system-ui,-apple-system,sans-serif;font-size:.85rem;line-height:1.5;color:var(--mute)}
+.ref-bbva{margin-top:1rem;padding-top:1rem;border-top:1px dashed rgba(255,255,255,.22);display:grid;gap:.6rem}
+.ref-bbva a{display:flex;align-items:center;justify-content:space-between;gap:.8rem;padding:.8rem 1rem;border-radius:16px;text-decoration:none;color:var(--ink);font-family:system-ui,-apple-system,sans-serif;font-size:.95rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14)}
+.ref-bbva a::after{content:"↗";color:var(--gold)}
+.ref-bbva .bbva-note{margin:0;text-align:center;font-family:system-ui,-apple-system,sans-serif;font-size:.85rem;line-height:1.5;color:var(--mute)}
+.ref-bbva .bbva-code{font-family:system-ui,-apple-system,sans-serif;font-size:.85rem;color:var(--mute);text-align:center}
+.ref-bbva code{font-family:ui-monospace,Menlo,Consolas,monospace;color:var(--gold-2);background:rgba(255,255,255,.08);padding:.15rem .45rem;border-radius:8px;user-select:all}
+.modal-disclaimer{margin-top:1rem;padding-top:.9rem;border-top:1px solid rgba(255,255,255,.14);font-family:system-ui,-apple-system,sans-serif;font-size:.78rem;line-height:1.5;color:var(--mute)}
 </style>
 </head>
 <body>
@@ -149,18 +170,35 @@ h1 .gold{background:linear-gradient(90deg,#9a7a2a,var(--gold-2),#9a7a2a);-webkit
       <a class="glass" href="https://github.com/Balda2691" target="_blank" rel="noopener">
         <span class="g-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/></svg></span><span class="g-txt">GitHub</span>
       </a>
+    
+    <button type="button" class="glass ref-open" id="ref-open"><span class="g-txt" data-i18n="ref_btn">Banche e investimenti</span></button>
     </div>
 
 
     <p class="credit" data-i18n="credit">Vuoi sapere chi c'è dietro? Un tecnico curioso e un'AI che non fa domande.</p>
   </main>
 
+  <div class="modal" id="ref-modal" hidden>
+    <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="ref-title">
+      <h2 id="ref-title" data-i18n="ref_t">Conti e investimenti</h2>
+      <p class="modal-note" data-i18n="ref_note">Link referral: se ti iscrivi tramite questi link, posso ricevere un piccolo bonus senza costi per te.</p>
+      <ul class="ref-list" id="ref-list"></ul>
+      <div class="ref-bbva">
+        <a href="https://www.bbva.it/promo/passaparola.html" target="_blank" rel="noopener sponsored"><span>Conto e Carta BBVA</span></a>
+        <p class="bbva-note" data-i18n="bbva_note">Puoi accreditare la pensione INPS sul conto BBVA.</p>
+        <p class="bbva-code"><span data-i18n="bbva_code">Codice invito</span>: <code>1E55005120C408</code></p>
+      </div>
+      <p class="modal-disclaimer" data-i18n="ref_disc">Ognuno è responsabile delle proprie scelte di investimento. Il capitale è sempre a rischio: informati, diversifica e investi solo ciò che puoi permetterti di perdere.</p>
+      <button type="button" class="modal-close" id="ref-close" data-i18n="ref_close">Chiudi</button>
+    </div>
+  </div>
   <script>
 const I18N = {
  "it": {
   "title": "Michele Baldassarre",
   "intro_sub": "Laboratorio personale",
   "intro_skip": "Clicca per entrare",
+  "ref_btn": "Banche e investimenti", "ref_t": "Conti e investimenti", "ref_note": "Link referral: se ti iscrivi tramite questi link, posso ricevere un piccolo bonus senza costi per te.", "ref_close": "Chiudi", "ref_disc": "Ognuno è responsabile delle proprie scelte di investimento. Il capitale è sempre a rischio: informati, diversifica e investi solo ciò che puoi permetterti di perdere.", "bbva_code": "Codice invito", "bbva_note": "Puoi accreditare la pensione INPS sul conto BBVA.",
   "kicker": "Portfolio personale",
   "phrases": [
    "Appassionato di hardware, mercati e tecnologia.",
@@ -183,6 +221,7 @@ const I18N = {
   "title": "Michele Baldassarre",
   "intro_sub": "Personal lab",
   "intro_skip": "Tap to enter",
+  "ref_btn": "Banks & investing", "ref_t": "Accounts and investing", "ref_note": "Referral links: if you sign up through these links, I may receive a small bonus at no cost to you.", "ref_close": "Close", "ref_disc": "Everyone is responsible for their own investment choices. Capital is always at risk: do your research, diversify and only invest what you can afford to lose.", "bbva_code": "Invite code", "bbva_note": "You can have your INPS pension paid into your BBVA account.",
   "kicker": "Personal portfolio",
   "phrases": [
    "Passionate about hardware, markets and technology.",
@@ -205,6 +244,7 @@ const I18N = {
   "title": "Michele Baldassarre",
   "intro_sub": "Личная лаборатория",
   "intro_skip": "Нажмите, чтобы войти",
+  "ref_btn": "Банки и инвестиции", "ref_t": "Счета и инвестиции", "ref_note": "Реферальные ссылки: если вы регистрируетесь по ним, я могу получить небольшой бонус без доплаты с вашей стороны.", "ref_close": "Закрыть", "ref_disc": "Каждый несёт ответственность за свои инвестиционные решения. Капитал всегда подвержен риску: изучайте информацию, диверсифицируйте и инвестируйте только то, что можете позволить себе потерять.", "bbva_code": "Код приглашения", "bbva_note": "Пенсию ИНПС можно зачислять на счёт BBVA.",
   "kicker": "Личное портфолио",
   "phrases": [
    "Увлекаюсь железом, рынками и технологиями.",
@@ -300,5 +340,30 @@ const I18N = {
     })();
   </script>
 
+<script>
+  // Elenco servizi per il popup: sostituisci i link con i tuoi referral
+  const REF_LINKS = [
+    { name: "Revolut Bank", url: "https://revolut.com/referral/?referral-code=michel76ix!NOV1-26-AR-H1&geo-redirect" },
+    { name: "Trade Republic", url: "https://refnocode.trade.re/78cd17f9" },
+    { name: "N26 Bank", url: "https://n26.com/r/micheleb7556?cid=630&lang=it" }
+  ];
+  (function () {
+    const modal = document.getElementById("ref-modal");
+    const list = document.getElementById("ref-list");
+    REF_LINKS.forEach(function (r) {
+      const li = document.createElement("li");
+      const a = document.createElement("a");
+      a.href = r.url; a.target = "_blank"; a.rel = "noopener sponsored nofollow";
+      a.textContent = r.name;
+      li.appendChild(a); list.appendChild(li);
+    });
+    function open() { modal.hidden = false; document.getElementById("ref-close").focus(); }
+    function close() { modal.hidden = true; }
+    document.getElementById("ref-open").addEventListener("click", open);
+    document.getElementById("ref-close").addEventListener("click", close);
+    modal.addEventListener("click", function (e) { if (e.target === modal) close(); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !modal.hidden) close(); });
+  })();
+</script>
 </body>
 </html>
